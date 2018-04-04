@@ -1,0 +1,265 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport"
+          content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>slider</title>
+    <style>
+        .slide-box {
+            height: 340px;
+            width: 590px;
+        }
+        .slide-list {
+            display: flex;
+            position: relative;
+            width: 100%;
+            height: 100%;
+        }
+
+        @media all and (max-width: 768px) {
+            .slide-list  {
+                width: 295px;
+                height: 170px;
+            }
+        }
+
+        .slide-item {
+            position: absolute;
+            opacity: 0;
+            z-index: 0;
+            transition: opacity 1s ease;
+        }
+        .slide-item > img {
+            vertical-align: top;
+            width: 100%;
+            height: 10%;
+        }
+        .wd-active {
+            opacity: 1;
+            z-index: 1;
+        }
+        .wd-slide-btn {
+            width: 30px;
+            height: 50px;
+            background-color: #000;
+            color: #fff;
+            padding: 10px 0;
+            text-align: center;
+            font-size: 22px;
+            line-height: 50px;
+            opacity: 0.3;
+            z-index: 2;
+            cursor: pointer;
+        }
+        .wd-slide-btn:hover {
+            opacity: 0.8;
+        }
+        .wd-right {
+            position: absolute;
+            right: 0;
+        }
+        .wd-left {
+            position: absolute;
+        }
+        .wd-vertical-center {
+            top: 50%;
+            transform: translateY(-50%);
+        }
+        .slide-indicator {
+            min-width: 100px;
+            height: 20px;
+            line-height: 20px;
+            text-align: center;
+            background-color: rgba(0, 0, 0, 0.3);
+            position: absolute;
+            z-index: 2;
+            bottom: 2%;
+            left: 50%;
+            border-radius: 10px;
+            transform: translateX(-50%);
+        }
+        .slide-indicator span:first-child {
+            margin-left: 15px;
+        }
+        .slide-indicator span:last-child {
+            margin-right: 15px;
+        }
+        .slide-indicator > span {
+            position: relative;
+            display: inline-block;
+            width: 10px;
+            height: 10px;
+            border-radius: 10px;
+            color: #fff;
+            background-color: rgba(255, 255, 255, 0.3);
+            margin: 0 2px;
+            cursor: pointer;
+            transition: all 0.5s linear;
+        }
+        .wd-slide-pointer.wd-indi-active {
+            width: 30px;
+        }
+        .wd-slide-pointer::after {
+            content: '';
+            position: absolute;
+            height: 100%;
+            left: 0;
+            width: 0;
+            border-radius: 10px;
+            opacity: 0.8;
+            background-color: #fff;
+            transform-origin: left;
+            transition: width 0.6s ease;
+            transition-delay: 0.3s;
+        }
+        .wd-slide-pointer.wd-indi-active::after {
+            width: 100%;
+        }
+
+    </style>
+    <script>
+        const log = console.log.bind(console)
+        const e = (sel, element=document) => {
+            return element.querySelector(sel)
+        }
+        const es = (selector, element=document) => {
+            return element.querySelectorAll(selector)
+        }
+        const bindAll = (selector, eventName, callback) => {
+            const sel = es(`.${selector}`)
+            for (let i = 0; i < sel.length; i++ ) {
+                sel[i].addEventListener(eventName, (event)=> {
+                    callback(event)
+                })
+            }
+        }
+        const removeClassAll = (className) => {
+            const element = es(`.${className}`)
+            for (let i = 0; i < element.length; i++ ) {
+                element[i].classList.remove(className)
+            }
+        }
+    </script>
+</head>
+<body>
+<br>
+<br>
+<br>
+
+<div class="slide-box">
+<div class="slide-list" data-imgs="3"  data-active="0">
+    <a href="#" id="id-wdimg-0" class="slide-item wd-active"><img src="./1.jpg" alt=""></a>
+    <a href="#" id="id-wdimg-1" class="slide-item"><img src="./2.jpg" alt=""></a>
+    <a href="#" id="id-wdimg-2" class="slide-item"><img src="./3.jpg" alt=""></a>
+    <div class="slide-controller">
+        <span class="wd-slide-btn wd-left wd-vertical-center" data-offset="-1">&lt;</span>
+        <span class="wd-slide-btn wd-right wd-vertical-center" data-offset="1">&gt;</span>
+    </div>
+    <div class="slide-indicator" >
+        <span id="id-pointer-0" class="wd-slide-pointer wd-indi-active"></span>
+        <span id="id-pointer-1" class="wd-slide-pointer wd-pointer-active"></span>
+        <span id="id-pointer-2" class="wd-slide-pointer"></span>
+    </div>
+</div>
+
+</div>
+<script>
+    const countImg = () => {
+        const slide = e('.slide-list')
+        const len = slide.children.length - 2
+        slide.setAttribute('data-imgs', len )
+    }
+
+    const indexByOffset = (slide, offset) => {
+        const imgs = Number(slide.dataset.imgs)
+        const index = Number(slide.dataset.active)
+        let i = ( imgs + index + offset ) % imgs
+        return i
+    }
+
+    const showImgByIndex = (slide, index) => {
+        slide.dataset.active = index
+        const className = 'wd-active'
+        removeClassAll(className)
+        const next = '#id-wdimg-' + String(index)
+        const img = e(next)
+        img.classList.add(className)
+    }
+
+    const indicatorByIndex = (index) => {
+        const className = 'wd-indi-active'
+        removeClassAll(className)
+        const next = '#id-pointer-' + String(index)
+        const indicator = e(next)
+        indicator.classList.add(className)
+    }
+
+    const bindEventSlide = () => {
+        countImg()
+        // bind button
+        bindAll('wd-slide-btn', 'click', (event)=> {
+            const button = event.target
+            const slide = button.closest('.slide-list')
+            const offset = Number(button.dataset.offset)
+            let nextIndex = indexByOffset(slide, offset)
+            showImgByIndex(slide, nextIndex)
+            indicatorByIndex(nextIndex)
+        })
+
+        // bind indicator
+        bindAll('wd-slide-pointer', 'click', (event) => {
+            const indicator = event.target
+            const index = indicator.id.split('-').slice(-1)[0]
+            const slide = indicator.closest('.slide-list')
+            slide.dataset.active = index
+            showImgByIndex(slide, index)
+            indicatorByIndex(index)
+        })
+    }
+
+    const playNextImage = () => {
+        const slide = e('.slide-list')
+        // get next index
+        const index = indexByOffset(slide, 1)
+        // show img and indicator
+        showImgByIndex(slide, index)
+        indicatorByIndex(index)
+    }
+
+    const autoPlay = (interval) => {
+        return setInterval( () =>{
+            playNextImage()
+        }, interval)
+    }
+
+    const autoSlide = (interval) => {
+        let tick = autoPlay(interval)
+        const selector = e('.slide-list')
+        selector.addEventListener('mouseenter', () => {
+            log('enter')
+            clearInterval(tick)
+        })
+
+        selector.addEventListener('mouseleave', () => {
+            log('leave')
+            tick = autoPlay(interval)
+        })
+    }
+
+    const __main =() =>{
+        bindEventSlide()
+        // set auto play interval time
+        let interval = 3000
+        autoSlide(interval)
+    }
+
+    __main()
+
+</script>
+</body>
+</html>
+
+
+
