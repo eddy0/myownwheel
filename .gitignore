@@ -2,3 +2,7 @@
 *.map
 
 *.scssc
+
+*.xml
+
+*.iml

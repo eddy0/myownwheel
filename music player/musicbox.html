@@ -1,0 +1,137 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport"
+          content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <style>
+        
+        * {
+            margin: 0;
+            border:0;
+            box-sizing: border-box;
+        }
+
+        a {
+            color: inherit;
+            text-decoration: none; }
+        a.wd-svg {
+            display: flex;
+            align-items: center; }
+
+        a:active, a:hover {
+            outline: 0; }
+
+        button {
+            padding: 0;
+            font: inherit;
+            color: inherit;
+            cursor: pointer;
+            background: none;
+            border: none;
+            outline: none;
+            appearance: none; }
+
+
+        .wd-btn {
+            display: inline-block;
+            padding: 0 16px;
+            /*font-size: 14px;*/
+            line-height: 32px;
+            color: rgba(255,255,255,0.6);
+            text-align: center;
+            cursor: pointer;
+            background: none;
+            border: 1px solid;
+            border-radius: 3px; }
+        .wd-btn:focus {
+            outline: none;
+            background-color: #f2f2f2; }
+        .wd-btn:disabled {
+            cursor: default;
+            opacity: 0.5; }
+        .wd-btn:hover:not(:disabled) {
+            background-color: rgba(133, 144, 166, 0.06); }
+
+        .wd-btn {
+            fill: currentColor;
+            display: flex;
+            align-items: center; }
+
+        .wd-btn-plain {
+            height: auto;
+            padding: 0;
+            line-height: inherit;
+            background-color: transparent;
+            border: none; }
+
+        .wd-btn-plain:hover {
+            background-color: transparent; }
+
+        .wd-btn-plain:hover {
+            color: #fff; }
+
+
+        body{
+            /*background: linear-gradient(-45deg, #EE7752, #E73C7E, #23A6D5, #23D5AB);*/
+            background: linear-gradient(to right, #5B6291, #E73C7E);
+            background-position: 10% 20%;
+            background-size: 200%;
+        }
+        .wd-musicbox{
+            width: 300px;
+            height: 500px;
+            margin: 100px auto 0;
+            background-color: rgba(255,255,255,0.1);
+            box-shadow: 0 3px 20px 0px rgba(0,0,0,0.18);
+            border-radius: 5px;
+        }
+        .wd-music-option{
+            /*margin: 20px 0;*/
+            font-size: 22px;
+            padding: 0 10px;
+            border-bottom:1px solid #8590a6;
+            display: flex;
+        }
+        
+        .wd-music-info{
+            margin: 0 auto;
+            font-size: 14px;
+            color: #e5e5e5;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+        }
+        .wd-song-name{
+            font-weight: 600;
+        }
+        
+    </style>
+    <title>Document</title>
+</head>
+<body>
+<div class="wd-musicbox">
+    <div class="wd-music-option">
+        <a href="#">
+            <button class="wd-btn wd-btn-plain" >&lt;</button>
+        </a>
+        <div class="wd-music-info">
+            <span class="wd-song-name">rolling in the deep</span>
+            <span class="wd-song-author">adele</span>
+        </div>
+        <a href="#">
+            <button class="wd-btn wd-btn-plain" >&gt;</button>
+        </a>
+    </div>
+    <div class="wd-player-controller">
+        
+    
+    </div>
+    <audio id="id-player" src="1.mp3"></audio>
+
+</div>
+
+</body>
+</html>
