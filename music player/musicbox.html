@@ -78,10 +78,11 @@
             background: linear-gradient(to right, #5B6291, #E73C7E);
             background-position: 10% 20%;
             background-size: 200%;
+            font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
         }
         .wd-musicbox{
-            width: 300px;
-            height: 500px;
+            width: 240px;
+            height: 430px;
             margin: 100px auto 0;
             background-color: rgba(255,255,255,0.1);
             box-shadow: 0 3px 20px 0px rgba(0,0,0,0.18);
@@ -90,9 +91,10 @@
         .wd-music-option{
             /*margin: 20px 0;*/
             font-size: 22px;
-            padding: 0 10px;
+            padding: 10px 10px 0 10px;
             border-bottom:1px solid #8590a6;
             display: flex;
+            align-items: center;
         }
         
         .wd-music-info{
@@ -107,8 +109,114 @@
         .wd-song-name{
             font-weight: 600;
         }
+        .wd-music-panel{
+            margin: 50px auto 20px;
+            background: url('./coverall.png') no-repeat -140px -580px;
+            width: 206px;
+            height: 205px;
+            animation-name: rotate;
+            animation-duration: 20s;
+            animation-iteration-count: infinite;
+            animation-timing-function: linear;
+            z-index: 1;
+        }
+        .wd-music-album {
+            position: relative;
+        }
+
+        .wd-music-album  img {
+            position: absolute;
+            border-radius: 50%;
+            top: 37px;
+            left: 50%;
+            transform: translateX(-50%) scale(1.02);
+        }
+
+
+
+        @keyframes rotate {
+            from { -webkit-transform: rotate(0deg); }
+            to { -webkit-transform: rotate(359deg); }
+        }
+
+        .wd-btn-icon > svg  {
+            cursor: pointer;
+            color: #f2f2f2;
+            font-size: 22px;
+        }
+        svg > path{
+            pointer-events: none;
+        }
+
+        .wd-btn-icon:hover {
+            color: #999;
+        }
+
+        .wd-music-progress {
+            position: relative;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin: 30px 25px;
+            font-size: 12px;
+            color: #ccc;
+        }
+
+
+        .progress-bar{
+            position: relative;
+            width: 63%;
+            height: 2px;
+            background-color: #fff;
+        }
+
+        .wd-music-procced{
+            /*content: '';*/
+            position: absolute;
+            width: 0%;
+            height: 2px;
+            background-color: red;
+            color:#000;
+        }
+
+        #id-play-dot{
+            top: 50%;
+            left: 0%;
+            transform: translateY(-50%);
+            position: absolute;
+        }
+
+        #id-play-dot > svg {
+            font-size: 11px;
+            fill: red;
+            color: red;
+        }
+
+
+
+        .wd-play-controller{
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin: 10px 25px;
+        }
+
+        .play-hide{
+            display: none;
+        }
+
+        .method-hide{
+            display: none;
+        }
+
+
+
         
     </style>
+    <script defer src="https://use.fontawesome.com/releases/v5.0.9/js/all.js" integrity="sha384-8iPTk2s/jMVj81dnzb/iFR2sdA7u06vHJyyLlAd4snFpCl/SnyUjRrbdJsw1pGIl" crossorigin="anonymous"></script>
+    <script src="../domencapsulation/wd.js"></script>
+
+
     <title>Document</title>
 </head>
 <body>
@@ -119,19 +227,52 @@
         </a>
         <div class="wd-music-info">
             <span class="wd-song-name">rolling in the deep</span>
-            <span class="wd-song-author">adele</span>
+            <span class="wd-song-author">Adele</span>
         </div>
         <a href="#">
             <button class="wd-btn wd-btn-plain" >&gt;</button>
         </a>
     </div>
-    <div class="wd-player-controller">
-        
-    
+    <div class="wd-music-album">
+        <div class="wd-music-panel">
+            <img src="./adele.jpg" alt="adele">
+        </div>
     </div>
-    <audio id="id-player" src="1.mp3"></audio>
+        <div class="wd-music-progress">
+            <span class="currentTime"> 00:00</span>
+            <span class="progress-bar">
+                <span id="id-play-dot"  class="wd-btn-icon">
+                    <i class=" far fa-dot-circle"></i>
+                </span>
+                <span class="wd-music-procced"></span>
+            </span>
+            <span class="totalTime"> 00:00 </span>
+        </div>
+    <div class="wd-play-controller">
+        <!--paly random-->
+        <span id="id-play-sync" class="wd-btn-icon "><i class=" fas fa-sync fa-2x"></i></span>
+        <span id="id-play-random"  class="wd-btn-icon method-hide"><i class="wd-btn-icon fas fa-random"></i></span>
+
+        <!--play back-->
+        <span id="id-play-backward"  class="wd-btn-icon "><i class="fas fa-backward"></i></span>
+
+        <!--play and pause-->
+        <span id="id-play-pause"  class="wd-btn-icon play-hide"><i class="fas fa-pause" ></i></span>
+        <span id="id-play-play"  class="wd-btn-icon "><i class=" fas fa-play"></i></span>
+
+        <!--play forward-->
+        <span id="id-play-forward"  class="wd-btn-icon "><i class=" fas fa-forward"></i></span>
+
+        <!--playlist-->
+        <span id="id-play-indent"  class="wd-btn-icon "><i class="fas fa-indent"></i></span>
+
+        <!--<span id="id-play-volume-down"><i class="wd-btn-icon fas fa-volume-down"></i></span>-->
+        <!--<span id="id-play-volume-up"><i class="wd-btn-icon fas fa-volume-up"></i></span>-->
+
+    </div>
+    <audio id="id-player-audio" src="1.mp3" controls></audio>
 
 </div>
-
+<script src="music.js"></script>
 </body>
 </html>
