@@ -1,0 +1,394 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport"
+          content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>homework11</title>
+    <script>
+        const log = console.log.bind(console)
+
+        const e = (sel, element=document) => {
+            return element.querySelector(sel)
+        }
+
+        const es = (selector, element=document) => {
+            return element.querySelectorAll(selector)
+        }
+
+        const bind = (selector, eventName, callback) => {
+            const tag = e(selector)
+            tag.addEventListener(eventName, (event) => {
+                callback(event)
+            })
+        }
+
+        const bindAll= (selector, eventName, callback) => {
+            const tags = es(selector)
+            for (let i = 0; i < tags.length; i++ ) {
+                let tag = tags[i]
+                tag.addEventListener(eventName, (event) => {
+                    callback(event)
+                })
+            }
+
+        }
+        const removeClassAll = function(className) {
+            const selector = '.' + className
+            const elements = es(selector)
+            for (let i = 0; i < elements.length; i++) {
+                let e = elements[i]
+                e.classList.remove(className)
+            }
+        }
+
+    </script>
+    <style>
+        body {
+            font-family: sans-serif;
+            font-size: 16px;
+        }
+
+        .audio-controller {
+            padding-left:35px;
+            margin-top: 10px;
+            position: relative;
+            display: flex;
+        }
+
+        .wd-btn{
+            border: 0;
+            min-width: 51px;
+            padding: 6px;
+            background-color:darkseagreen;
+            color: #fff;
+            font-weight: 600;
+            border-radius: 4px;
+            cursor: pointer;
+            transition: background-color 0.2s linear;
+        }
+        .wd-btn.btn-music-play{
+            display: none;
+            background-color: #557055;
+        }
+        .wd-btn.btn-music-pause{
+            display: none;
+            background-color: #80a980;
+        }
+        /*.wd-btn.btn-music-play:hover{*/
+            /*background-color: #557055;*/
+        /*}*/
+
+        /*.wd-btn.btn-music-pause:hover{*/
+            /*background-color: #80a980;*/
+        /*}*/
+
+        .wd-btn:focus{
+            border: 0;
+            outline: 0;
+        }
+
+        .wd-btn.wd-on{
+            display: block;
+        }
+
+        .audio-progress {
+            display: flex;
+            align-items: center;
+        }
+        .audio-progress > span {
+            margin: 0 10px;
+            font-size: 14px;
+            color: #5e5e5e;
+        }
+
+        .player-library{
+            margin-left: 10px;
+            margin-top: 10px;
+            border-radius: 4px;
+            box-shadow: 0 1px 4px rgba(0,0,0,0.3);
+            width: 160px;
+        }
+        .libarary-title{
+            padding: 10px ;
+            padding-left: 40px;
+            font-weight: 500;
+            color: #5e5e5e;
+        }
+        .music-song{
+            background-color: #d8e5d8;
+            color: #8d8d8d;
+            font-size: 14px;
+            padding: 6px 16px;
+            transition: all 0.3s ease;
+            border-radius: 1px;
+            cursor: pointer;
+        }
+        .music-song:hover{
+            background-color: #c0ccc0;
+            color: #fff;
+        }
+        .player-library > div+div{
+            margin-top: 2px;
+        }
+        .active{
+            background-color: #c0ccc0;
+            color: #fff;
+        }
+        .player-model{
+            position: absolute;
+            margin-left: 90px;
+            border: 0;
+            font-size: 12px;
+            min-width: 85px;
+            padding: 6px;
+            text-align: center;
+            background-color:#ebebfb;
+            color: #5c5c64;
+            border-radius: 3px;
+            cursor: pointer;
+            visibility: hidden;
+            z-index: 0;
+            transition: visibility 0.1s ease;
+        }
+        .player-model:focus{
+            outline: 0;
+            border: 0;
+        }
+        
+        /*.player-model:hover{*/
+            /*color: #f5f5fd ;*/
+            /*background-color: #b8b8c8;*/
+        /*}*/
+        .model-active{
+            visibility: visible;
+            z-index: 1;
+        }
+
+
+    </style>
+</head>
+<body>
+
+<audio id="id-player-audio" src="2.mp3" controls></audio>
+<div class="audio-progress">
+    <span id="id-music-current">00:00</span>
+    <input id="id-music-progress" min="0" type="range" value="0" >
+    <span id="id-music-duration">00:00</span>
+</div>
+<div class="audio-controller">
+    <button class="wd-btn btn-music-play  wd-on">play</button>
+    <button class="wd-btn btn-music-pause">pause</button>
+    <button id="id-model-normal" class="player-model">normal model</button>
+    <button id="id-model-repeat" class="player-model model-active">repeat model</button>
+    <button id="id-model-shuffle" class="player-model">shuffle model</button>
+</div>
+<div class="player-library">
+    <div class="libarary-title" data-songs="3">Play List</div>
+    <div class="music-song " data-path="1.mp3">first song</div>
+    <div class="music-song" data-path="2.mp3">second song</div>
+    <div class="music-song" data-path="3.mp3">third song</div>
+
+</div>
+
+<script>
+
+    const toggleHighlight = (element, active) => {
+        removeClassAll(active)
+        element.classList.add(active)
+    }
+
+    const bindPlay = () => {
+        const audio = e('#id-player-audio')
+
+        bind('.btn-music-play', 'click', ()=>{
+            let element = e('.btn-music-pause')
+            let active = 'wd-on'
+            toggleHighlight(element, active)
+            audio.play()
+        })
+
+        bind('.btn-music-pause', 'click', ()=>{
+            let element = e('.btn-music-play')
+            let active = 'wd-on'
+            toggleHighlight(element, active)
+            audio.pause()
+        })
+    }
+
+    const wrapupTime = (t) => {
+        t = String(t)
+        if (t >= 10){
+            return t
+        } else {
+            return `0${t}`
+        }
+    }
+
+    const formattedTime = (time) => {
+        time = Number(time)
+        let minute = Math.floor(time / 60)
+        let second = Math.floor(time % 60)
+        minute = wrapupTime(minute)
+        second = wrapupTime(second)
+        let t = `${minute}:${second}`
+        return t
+    }
+
+    const bindDurationTime = (audio) => {
+        const durationBox = e('#id-music-duration')
+        const total = audio.duration
+        const t = formattedTime(total)
+        durationBox.innerHTML = t
+    }
+
+    const updateCurrentTime = (currentTime) => {
+        const currentBox = e('#id-music-current')
+        let t = formattedTime(currentTime)
+        currentBox.innerHTML = t
+    }
+
+    const bindCurrentTime = (audio) => {
+        let interval = 1000
+        setInterval( () =>{
+            let current = audio.currentTime
+            updateCurrentTime(current)
+        }, interval)
+    }
+
+    const moveByTime = (bar, audio) => {
+        let interval = 1000
+        let t = setInterval( () =>{
+            let current = audio.currentTime
+            bar.value= current
+        }, interval)
+        return t
+    }
+
+    const bindTimeBar = (audio) => {
+        //init max from duration
+        const bar = e('#id-music-progress')
+        const total = audio.duration
+        bar.setAttribute('max', total)
+
+        // timebar thumb move when music goes on
+        let tick = moveByTime(bar, audio)
+
+        // manual set current time by input bar &&
+        // will effect on current time box
+        bar.addEventListener('input', ()=> {
+            let val = bar.value
+            audio.currentTime = val
+            updateCurrentTime(val)
+        })
+
+        // disable interval when mouse down on input
+        bar.addEventListener('mousedown', ()=> {
+            clearInterval(tick)
+        })
+
+        // enable interval when mouse down on input
+        bar.addEventListener('mouseup', ()=> {
+            tick = moveByTime(bar, audio)
+        })
+    }
+
+    const bindTime = () => {
+        const audio = e('#id-player-audio')
+        bind('#id-player-audio', 'canplay', ()=> {
+            bindDurationTime(audio)
+            bindCurrentTime(audio)
+            bindTimeBar(audio)
+        })
+    }
+
+    const playMusic = () => {
+        const audio = e('#id-player-audio')
+        audio.addEventListener('canplay', () => {
+            audio.play()
+        })
+    }
+
+    const bindLibrary = () => {
+        const audio = e('#id-player-audio')
+        bind('.player-library', 'click', (event) => {
+            let self = event.target
+            if (self.classList.contains('music-song')){
+                audio.src = self.dataset.path
+                toggleHighlight(self, 'active')
+                let button = e('.btn-music-pause')
+                toggleHighlight(button, 'wd-on')
+                playMusic()
+            }
+        })
+    }
+
+    const playRepeat = (audio) => {
+        audio.addEventListener('ended', () => {
+            audio.currentTime = 0
+            playMusic()
+        })
+    }
+
+    const playNormal = (audio) => {
+        audio.addEventListener('ended', () => {
+
+        })
+    }
+
+    const playRandom = (audio) => {
+
+    }
+
+    const activeModel = (audio, active) => {
+        const models = {
+            'id-model-repeat':  playRepeat,
+            'id-model-normal': playNormal,
+            'id-model-shuffle': playRandom,
+        }
+        let model = active.id
+        models[model](audio)
+    }
+
+    const modelByIndex = (element) => {
+        const models = [
+            'id-model-normal',
+            'id-model-repeat',
+            'id-model-shuffle',
+        ]
+        let len = models.length
+        let index = models.findIndex( i => i === element.id)
+        let i = (len + index + 1) % len
+        let m = models[i]
+        let model = e(`#${m}`)
+        return model
+    }
+
+    const bindPlayModel = () => {
+        // initial model when web start
+        const audio = e('#id-player-audio')
+        const active = e('.model-active')
+        activeModel(audio, active)
+
+        bindAll('.player-model', 'click', (event) => {
+            let self = event.target
+            let model = modelByIndex(self)
+            removeClassAll('model-active')
+            model.classList.add('model-active')
+            activeModel(audio, active)
+        })
+    }
+
+    const __main = () => {
+        bindPlay()
+        bindTime()
+        bindLibrary()
+        bindPlayModel()
+    }
+
+    __main()
+
+</script>
+</body>
+</html>
