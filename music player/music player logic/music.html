@@ -50,6 +50,12 @@
             font-size: 16px;
         }
 
+        ul{
+            list-style: none;
+            margin: 0;
+            padding: 0;
+        }
+
         .audio-controller {
             padding-left:35px;
             margin-top: 10px;
@@ -77,11 +83,11 @@
             background-color: #80a980;
         }
         /*.wd-btn.btn-music-play:hover{*/
-            /*background-color: #557055;*/
+        /*background-color: #557055;*/
         /*}*/
 
         /*.wd-btn.btn-music-pause:hover{*/
-            /*background-color: #80a980;*/
+        /*background-color: #80a980;*/
         /*}*/
 
         .wd-btn:focus{
@@ -103,7 +109,7 @@
             color: #5e5e5e;
         }
 
-        .player-library{
+        .music-playlist{
             margin-left: 10px;
             margin-top: 10px;
             border-radius: 4px;
@@ -129,7 +135,7 @@
             background-color: #c0ccc0;
             color: #fff;
         }
-        .player-library > div+div{
+        ul.list-items > li+li{
             margin-top: 2px;
         }
         .active{
@@ -156,10 +162,10 @@
             outline: 0;
             border: 0;
         }
-        
+
         /*.player-model:hover{*/
-            /*color: #f5f5fd ;*/
-            /*background-color: #b8b8c8;*/
+        /*color: #f5f5fd ;*/
+        /*background-color: #b8b8c8;*/
         /*}*/
         .model-active{
             visibility: visible;
@@ -171,7 +177,7 @@
 </head>
 <body>
 
-<audio id="id-player-audio" src="2.mp3" controls></audio>
+<audio id="id-player-audio" src="1.mp3"></audio>
 <div class="audio-progress">
     <span id="id-music-current">00:00</span>
     <input id="id-music-progress" min="0" type="range" value="0" >
@@ -180,15 +186,17 @@
 <div class="audio-controller">
     <button class="wd-btn btn-music-play  wd-on">play</button>
     <button class="wd-btn btn-music-pause">pause</button>
-    <button id="id-model-normal" class="player-model">normal model</button>
-    <button id="id-model-repeat" class="player-model model-active">repeat model</button>
+    <button id="id-model-normal" class="player-model model-active">normal model</button>
+    <button id="id-model-repeat" class="player-model ">repeat model</button>
     <button id="id-model-shuffle" class="player-model">shuffle model</button>
 </div>
-<div class="player-library">
-    <div class="libarary-title" data-songs="3">Play List</div>
-    <div class="music-song " data-path="1.mp3">first song</div>
-    <div class="music-song" data-path="2.mp3">second song</div>
-    <div class="music-song" data-path="3.mp3">third song</div>
+<div class="music-playlist">
+    <div class="libarary-title" >Play List</div>
+    <ul class="list-items" data-songs="3" data-active="2">
+        <li class="music-song " data-path="1.mp3">first song</li>
+        <li class="music-song" data-path="2.mp3">second song</li>
+        <li class="music-song" data-path="3.mp3">third song</li>
+    </ul>
 
 </div>
 
@@ -259,9 +267,10 @@
 
     const moveByTime = (bar, audio) => {
         let interval = 1000
-        let t = setInterval( () =>{
+        let t = setTimeout( () =>{
             let current = audio.currentTime
             bar.value= current
+            log('current', current)
         }, interval)
         return t
     }
@@ -274,10 +283,12 @@
 
         // timebar thumb move when music goes on
         let tick = moveByTime(bar, audio)
+        // log('tick', tick)
 
         // manual set current time by input bar &&
         // will effect on current time box
         bar.addEventListener('input', ()=> {
+            clearInterval(tick)
             let val = bar.value
             audio.currentTime = val
             updateCurrentTime(val)
@@ -291,6 +302,7 @@
         // enable interval when mouse down on input
         bar.addEventListener('mouseup', ()=> {
             tick = moveByTime(bar, audio)
+
         })
     }
 
@@ -310,9 +322,15 @@
         })
     }
 
-    const bindLibrary = () => {
+    const highlightList = () => {
         const audio = e('#id-player-audio')
-        bind('.player-library', 'click', (event) => {
+
+    }
+
+    const bindPlayList = () => {
+        highlightList()
+        const audio = e('#id-player-audio')
+        bind('.music-playlist', 'click', (event) => {
             let self = event.target
             if (self.classList.contains('music-song')){
                 audio.src = self.dataset.path
@@ -324,6 +342,30 @@
         })
     }
 
+    const nextIndex = (db, audio) => {
+        const len = db.length
+        const current = audio.src
+        const path = current.split('/').pop()
+        let index = db.findIndex( i => i === path)
+        if (index > -1){
+            let i = (len + index + 1) % len
+            return i
+        }
+    }
+
+    const playNormal = (audio) => {
+        let db = [
+            '1.mp3',
+            '2.mp3',
+            '3.mp3'
+        ]
+        audio.addEventListener('ended', () => {
+            let index = nextIndex(db, audio)
+            audio.src = db[index]
+            playMusic()
+        })
+    }
+
     const playRepeat = (audio) => {
         audio.addEventListener('ended', () => {
             audio.currentTime = 0
@@ -331,27 +373,23 @@
         })
     }
 
-    const playNormal = (audio) => {
-        audio.addEventListener('ended', () => {
-
-        })
-    }
-
     const playRandom = (audio) => {
 
     }
 
-    const activeModel = (audio, active) => {
+    const activeModel = (audio) => {
         const models = {
             'id-model-repeat':  playRepeat,
             'id-model-normal': playNormal,
             'id-model-shuffle': playRandom,
         }
+        const active = e('.model-active')
         let model = active.id
         models[model](audio)
+        console.log('models', model )
     }
 
-    const modelByIndex = (element) => {
+    const modelByClick = (element) => {
         const models = [
             'id-model-normal',
             'id-model-repeat',
@@ -368,22 +406,21 @@
     const bindPlayModel = () => {
         // initial model when web start
         const audio = e('#id-player-audio')
-        const active = e('.model-active')
-        activeModel(audio, active)
+        activeModel(audio)
 
         bindAll('.player-model', 'click', (event) => {
             let self = event.target
-            let model = modelByIndex(self)
+            let model = modelByClick(self)
             removeClassAll('model-active')
             model.classList.add('model-active')
-            activeModel(audio, active)
+            activeModel(audio)
         })
     }
 
     const __main = () => {
         bindPlay()
         bindTime()
-        bindLibrary()
+        bindPlayList()
         bindPlayModel()
     }
 
