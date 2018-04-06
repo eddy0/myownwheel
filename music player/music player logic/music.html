@@ -67,6 +67,7 @@
             border: 0;
             min-width: 51px;
             padding: 6px;
+            margin: 0 8px;
             background-color:darkseagreen;
             color: #fff;
             font-weight: 600;
@@ -75,20 +76,16 @@
             transition: background-color 0.2s linear;
         }
         .wd-btn.btn-music-play{
-            display: none;
             background-color: #557055;
         }
         .wd-btn.btn-music-pause{
-            display: none;
             background-color: #80a980;
         }
-        /*.wd-btn.btn-music-play:hover{*/
-        /*background-color: #557055;*/
-        /*}*/
+        
+        .wd-btn.btn-music-last:hover,.wd-btn.btn-music-next:hover{
+            background-color: #719f71;
+        }
 
-        /*.wd-btn.btn-music-pause:hover{*/
-        /*background-color: #80a980;*/
-        /*}*/
 
         .wd-btn:focus{
             border: 0;
@@ -96,7 +93,7 @@
         }
 
         .wd-btn.wd-on{
-            display: block;
+            display: none;
         }
 
         .audio-progress {
@@ -104,6 +101,7 @@
             align-items: center;
         }
         .audio-progress > span {
+            min-width: 38px;
             margin: 0 10px;
             font-size: 14px;
             color: #5e5e5e;
@@ -111,7 +109,7 @@
 
         .music-playlist{
             margin-left: 10px;
-            margin-top: 10px;
+            margin-top: 20px;
             border-radius: 4px;
             box-shadow: 0 1px 4px rgba(0,0,0,0.3);
             width: 160px;
@@ -144,7 +142,8 @@
         }
         .player-model{
             position: absolute;
-            margin-left: 90px;
+            left: 200px;
+            bottom: -47px;
             border: 0;
             font-size: 12px;
             min-width: 85px;
@@ -171,7 +170,58 @@
             visibility: visible;
             z-index: 1;
         }
+    </style>
+    <style>
+        
+        .bar-container {
+            position: relative;
+        }
+      
+        #id-music-progress {
+            position: relative;
+            -webkit-appearance: none;
+            appearance: none;
+            width: 180px;
+            height: 10px;
+            border-radius: 5px;
+            background: #d3d3d3;
+            outline: none;
+            -webkit-transition: .2s;
+            transition: opacity .2s;
+        }
 
+        #id-music-progress:hover {
+            background: #c6c6c6;
+        }
+
+        #id-music-progress::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            appearance: none;
+            width: 15px;
+            height: 15px;
+            background: #93cf96;
+            cursor: pointer;
+            border-radius: 50%;
+        }
+        
+        #id-music-progress::-moz-range-thumb {
+            width: 28px;
+            height: 28px;
+            background: #93cf96;
+            cursor: pointer;
+        }
+
+        .wd-music-procced{
+            position: absolute;
+            /*width: 12%;*/
+            /*height: 10px;*/
+            /*background-color: red;*/
+            /*color: #000;*/
+            /*top: 7px;*/
+            /*left: 0;*/
+            /*border-radius: 5px;*/
+            /*z-index: 0;*/
+        }
 
     </style>
 </head>
@@ -180,12 +230,17 @@
 <audio id="id-player-audio" src="1.mp3"></audio>
 <div class="audio-progress">
     <span id="id-music-current">00:00</span>
-    <input id="id-music-progress" min="0" type="range" value="0" >
+    <div class="bar-container">
+        <input id="id-music-progress" min="0" type="range" value="0" >
+        <span class="wd-music-procced"></span>
+    </div>
     <span id="id-music-duration">00:00</span>
 </div>
 <div class="audio-controller">
-    <button class="wd-btn btn-music-play  wd-on">play</button>
-    <button class="wd-btn btn-music-pause">pause</button>
+    <button class="wd-btn btn-music-last" data-offset="-1">last</button>
+    <button class="wd-btn btn-music-play ">play</button>
+    <button class="wd-btn btn-music-pause wd-on">pause</button>
+    <button class="wd-btn btn-music-next" data-offset="1">next</button>
     <button id="id-model-normal" class="player-model model-active">normal model</button>
     <button id="id-model-repeat" class="player-model ">repeat model</button>
     <button id="id-model-shuffle" class="player-model">shuffle model</button>
@@ -197,31 +252,62 @@
         <li class="music-song" data-path="2.mp3">second song</li>
         <li class="music-song" data-path="3.mp3">third song</li>
     </ul>
-
 </div>
 
-<script>
 
-    const toggleHighlight = (element, active) => {
+<script>
+    
+    const getData = () => {
+        const db = [
+            '1.mp3',
+            '2.mp3',
+            '3.mp3'
+        ]
+        return db
+    }
+
+    const togglePlayBtn = (selector='.btn-music-play') => {
+        let element = e(selector)
+        let active = 'wd-on'
         removeClassAll(active)
         element.classList.add(active)
+    }
+    
+    const switchByButton = (button, audio) => {
+        const db = getData()
+        const offset = Number(button.dataset.offset)
+        let index = nextIndex(db, audio, offset)
+        audio.src = db[index]
+        playMusic()
     }
 
     const bindPlay = () => {
         const audio = e('#id-player-audio')
 
         bind('.btn-music-play', 'click', ()=>{
-            let element = e('.btn-music-pause')
-            let active = 'wd-on'
-            toggleHighlight(element, active)
+            let selector = '.btn-music-play'
+            togglePlayBtn(selector)
             audio.play()
         })
 
         bind('.btn-music-pause', 'click', ()=>{
-            let element = e('.btn-music-play')
-            let active = 'wd-on'
-            toggleHighlight(element, active)
+            let selector = '.btn-music-pause'
+            togglePlayBtn(selector)
             audio.pause()
+        })
+
+        bind('.btn-music-last', 'click', ()=>{
+            const button = e('.btn-music-last')
+            switchByButton(button, audio)
+            highlightSong()
+            playMusic()
+        })
+
+        bind('.btn-music-next', 'click', ()=>{
+            const button = e('.btn-music-next')
+            switchByButton(button, audio)
+            highlightSong()
+            playMusic()
         })
     }
 
@@ -245,10 +331,12 @@
     }
 
     const bindDurationTime = (audio) => {
-        const durationBox = e('#id-music-duration')
-        const total = audio.duration
-        const t = formattedTime(total)
-        durationBox.innerHTML = t
+        bind('#id-player-audio', 'canplay', ()=> {
+            const durationBox = e('#id-music-duration')
+            const total = audio.duration
+            const t = formattedTime(total)
+            durationBox.innerHTML = t
+        })
     }
 
     const updateCurrentTime = (currentTime) => {
@@ -259,39 +347,48 @@
 
     const bindCurrentTime = (audio) => {
         let interval = 1000
-        setInterval( () =>{
+        let t = setInterval( () =>{
             let current = audio.currentTime
             updateCurrentTime(current)
-        }, interval)
-    }
-
-    const moveByTime = (bar, audio) => {
-        let interval = 1000
-        let t = setTimeout( () =>{
-            let current = audio.currentTime
-            bar.value= current
-            log('current', current)
         }, interval)
         return t
     }
 
-    const bindTimeBar = (audio) => {
-        //init max from duration
-        const bar = e('#id-music-progress')
-        const total = audio.duration
-        bar.setAttribute('max', total)
+    const moveByTime = (bar, audio) => {
+        let interval = 1000
+        let t = setInterval( () =>{
+                let current = audio.currentTime
+                bar.value= current
+                // log('current', current)
+        }, interval)
+        return t
+    }
+    
+    const lengthByDuration = (bar, audio) => {
+        bind('#id-player-audio', 'canplay', ()=> {
+            const total = audio.duration
+            bar.setAttribute('max', total)
+        })
+    }
 
+    const bindTimeBar = (audio) => {
+        const bar = e('#id-music-progress')
+
+        //init max from duration
+        lengthByDuration(bar, audio)
+        
         // timebar thumb move when music goes on
         let tick = moveByTime(bar, audio)
-        // log('tick', tick)
 
         // manual set current time by input bar &&
         // will effect on current time box
         bar.addEventListener('input', ()=> {
-            clearInterval(tick)
-            let val = bar.value
+            // clearInterval(tick)
+            clearInterval(bindCurrentTime(audio))
+            let val = Number(bar.value)
             audio.currentTime = val
             updateCurrentTime(val)
+            playMusic()
         })
 
         // disable interval when mouse down on input
@@ -302,17 +399,15 @@
         // enable interval when mouse down on input
         bar.addEventListener('mouseup', ()=> {
             tick = moveByTime(bar, audio)
-
+            togglePlayBtn()
         })
     }
 
     const bindTime = () => {
         const audio = e('#id-player-audio')
-        bind('#id-player-audio', 'canplay', ()=> {
-            bindDurationTime(audio)
-            bindCurrentTime(audio)
-            bindTimeBar(audio)
-        })
+        bindDurationTime(audio)
+        bindCurrentTime(audio)
+        bindTimeBar(audio)
     }
 
     const playMusic = () => {
@@ -322,46 +417,52 @@
         })
     }
 
-    const highlightList = () => {
+    const highlightSong = () => {
         const audio = e('#id-player-audio')
+        const current = audio.src
+        const src = current.split('/').pop()
+        const list = es('.music-song')
+        for (let i = 0; i < list.length; i++) {
+            let s = list[i]
+            let path = s.dataset.path
+            if (src === path) {
+                removeClassAll('active')
+                s.classList.add('active')
+            }
+        }
 
     }
 
     const bindPlayList = () => {
-        highlightList()
+        highlightSong()
         const audio = e('#id-player-audio')
         bind('.music-playlist', 'click', (event) => {
             let self = event.target
             if (self.classList.contains('music-song')){
                 audio.src = self.dataset.path
-                toggleHighlight(self, 'active')
-                let button = e('.btn-music-pause')
-                toggleHighlight(button, 'wd-on')
+                togglePlayBtn()
+                highlightSong()
                 playMusic()
             }
         })
     }
 
-    const nextIndex = (db, audio) => {
+    const nextIndex = (db, audio, offset) => {
         const len = db.length
         const current = audio.src
         const path = current.split('/').pop()
         let index = db.findIndex( i => i === path)
         if (index > -1){
-            let i = (len + index + 1) % len
+            let i = (len + index + offset) % len
             return i
         }
     }
 
-    const playNormal = (audio) => {
-        let db = [
-            '1.mp3',
-            '2.mp3',
-            '3.mp3'
-        ]
+    const playNormal = (audio, db) => {
         audio.addEventListener('ended', () => {
-            let index = nextIndex(db, audio)
+            let index = nextIndex(db, audio, 1)
             audio.src = db[index]
+            highlightSong()
             playMusic()
         })
     }
@@ -372,12 +473,30 @@
             playMusic()
         })
     }
+    
+    const random = (start, end) => {
+        let max = Math.random() * (end - start + 1)
+        let i = Math.floor(max + start)
+        return i
+    }
+    
+    const randomIndex = (db) => {
+        const len = db.length - 1
+        const index = random(0, len)
+        return index
+    }
 
-    const playRandom = (audio) => {
-
+    const playRandom = (audio, db) => {
+        audio.addEventListener('ended', () => {
+            let index = randomIndex(db, audio)
+            audio.src = db[index]
+            highlightSong()
+            playMusic()
+        })
     }
 
     const activeModel = (audio) => {
+        const db = getData()
         const models = {
             'id-model-repeat':  playRepeat,
             'id-model-normal': playNormal,
@@ -385,8 +504,7 @@
         }
         const active = e('.model-active')
         let model = active.id
-        models[model](audio)
-        console.log('models', model )
+        models[model](audio, db)
     }
 
     const modelByClick = (element) => {
