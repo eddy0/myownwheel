@@ -5,7 +5,7 @@
     <meta name="viewport"
           content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
     <meta http-equiv="X-UA-Compatible" content="ie=edge">
-    <title>homework11</title>
+    <title>music box</title>
     <script>
         const log = console.log.bind(console)
 
@@ -32,8 +32,8 @@
                     callback(event)
                 })
             }
-
         }
+
         const removeClassAll = function(className) {
             const selector = '.' + className
             const elements = es(selector)
@@ -55,10 +55,59 @@
             margin: 0;
             padding: 0;
         }
+        #id-player-audio{
+            position: absolute;
+            z-index: -100;
+        }
+
+        .wrapper{
+            width: 300px;
+            margin: 100px auto 50px;
+            border-radius: 10px;
+            box-shadow: 0 2px 15px rgba(0,0,0,0.3);
+            padding: 20px 20px 50px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        .song-info{
+            width: 100%;
+            overflow: hidden;
+            background-color: #c0cdd2;
+            color:#393d3f;
+            font-size: 14px;
+            border-radius: 5px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding: 5px;
+            margin-bottom: 10px;
+        }
+
+        .song-info .song-name{
+            overflow: hidden;
+            width: 100%;
+            text-align: center;
+            font-weight: 550;
+            margin-bottom: 2px;
+            animation-name: songName;
+            animation-duration: 10s;
+            animation-iteration-count: 15;
+            animation-direction: normal;
+        }
+
+        @-webkit-keyframes songName {
+            0% { margin-left:0;}
+            25% {margin-left:-30%;}
+            50% {margin-left:0;}
+            75% { margin-left: 30%;}
+            100% {margin-left:0;}
+        }
+
 
         .audio-controller {
-            padding-left:35px;
-            margin-top: 10px;
+            margin-top: 15px;
             position: relative;
             display: flex;
         }
@@ -108,8 +157,7 @@
         }
 
         .music-playlist{
-            margin-left: 10px;
-            margin-top: 20px;
+            margin: 0 auto;
             border-radius: 4px;
             box-shadow: 0 1px 4px rgba(0,0,0,0.3);
             width: 160px;
@@ -142,8 +190,8 @@
         }
         .player-model{
             position: absolute;
-            left: 200px;
-            bottom: -47px;
+            left: 61px;
+            bottom: -39px;
             border: 0;
             font-size: 12px;
             min-width: 85px;
@@ -166,6 +214,7 @@
         /*color: #f5f5fd ;*/
         /*background-color: #b8b8c8;*/
         /*}*/
+
         .model-active{
             visibility: visible;
             z-index: 1;
@@ -226,8 +275,13 @@
     </style>
 </head>
 <body>
-
 <audio id="id-player-audio" src="1.mp3"></audio>
+<div class="wrapper">
+<div class="song-info">
+    <div class="song-name">song name</div>
+    <div class="author">singer name</div>
+
+</div>
 <div class="audio-progress">
     <span id="id-music-current">00:00</span>
     <div class="bar-container">
@@ -241,9 +295,10 @@
     <button class="wd-btn btn-music-play ">play</button>
     <button class="wd-btn btn-music-pause wd-on">pause</button>
     <button class="wd-btn btn-music-next" data-offset="1">next</button>
-    <button id="id-model-normal" class="player-model model-active">normal model</button>
+    <button id="id-model-normal" class="player-model model-active ">normal model</button>
     <button id="id-model-repeat" class="player-model ">repeat model</button>
     <button id="id-model-shuffle" class="player-model">shuffle model</button>
+</div>
 </div>
 <div class="music-playlist">
     <div class="libarary-title" >Play List</div>
@@ -253,32 +308,84 @@
         <li class="music-song" data-path="3.mp3">third song</li>
     </ul>
 </div>
+<br>
+<br>
+<br>
+<br>
+<br>
+<!--<div class="todo">-->
+    <!--<div class="title" style="margin-left: 100px"><strong>todo</strong></div>-->
+    <!--<pre>-->
+        <!--1. 进度条完成没有颜色填充-->
+        <!--2. setInterval 不懂, 似乎没有清除掉-->
+        <!--3. 播放模式在切换之后没有删除之前的循环模式-->
+        <!--4. data 应该写在文件里面, 没有做好song name-->
+           <!--和 singer name的逻辑-->
+        <!--5. 是不是应该把播放过的 song 添加到一个array-->
+           <!--里面, 随机模式下的 上一首是不是就会播放-->
+           <!--上一首播放的歌曲？-->
+    <!--</pre>-->
+
+<!--</div>-->
 
 
 <script>
-    
+    const infoByDb = (key, value) => {
+        let db = getData()
+        let data = db.map( (data) => {
+            if (data[key] === value){
+                return data
+            }
+        })
+        return data
+    }
+
     const getData = () => {
         const db = [
             '1.mp3',
             '2.mp3',
-            '3.mp3'
+            '3.mp3',
+            '走在冷风中.mp3'
+        ]
+        const database = [
+            {
+                name: '1.mp3',
+                author: 'singer',
+                imgurl: 'singer',
+                path: 'singer',
+            },
         ]
         return db
     }
 
-    const togglePlayBtn = (selector='.btn-music-play') => {
-        let element = e(selector)
+    const togglePlayBtn = (selector) => {
+        let s = selector ||'.btn-music-play'
+        let element = e(s)
         let active = 'wd-on'
         removeClassAll(active)
         element.classList.add(active)
+
     }
-    
-    const switchByButton = (button, audio) => {
+
+    const indexFromModel = (button, db) => {
+        const audio = e('#id-player-audio')
+        const model = e('.model-active')
+        let index
+        if (model.id ==='id-model-shuffle'){
+            index = randomIndex(db)
+        } else {
+            const offset = Number(button.dataset.offset)
+            index = nextIndex(db, audio, offset)
+        }
+        return index
+    }
+
+    const switchByButton = (button,audio) => {
         const db = getData()
-        const offset = Number(button.dataset.offset)
-        let index = nextIndex(db, audio, offset)
+        let index = indexFromModel(button,db)
         audio.src = db[index]
         playMusic()
+        togglePlayBtn()
     }
 
     const bindPlay = () => {
@@ -346,6 +453,7 @@
     }
 
     const bindCurrentTime = (audio) => {
+        // log('bind current time')
         let interval = 1000
         let t = setInterval( () =>{
             let current = audio.currentTime
@@ -419,7 +527,7 @@
 
     const highlightSong = () => {
         const audio = e('#id-player-audio')
-        const current = audio.src
+        const current = decodeURI(audio.src)
         const src = current.split('/').pop()
         const list = es('.music-song')
         for (let i = 0; i < list.length; i++) {
@@ -458,22 +566,22 @@
         }
     }
 
-    const playNormal = (audio, db) => {
-        audio.addEventListener('ended', () => {
-            let index = nextIndex(db, audio, 1)
-            audio.src = db[index]
-            highlightSong()
-            playMusic()
-        })
+    const playNormal = () => {
+        const audio = e('#id-player-audio')
+        const db = getData()
+        let index = nextIndex(db, audio, 1)
+        // log('db', db)
+        audio.src = db[index]
+        highlightSong()
+        playMusic()
     }
 
-    const playRepeat = (audio) => {
-        audio.addEventListener('ended', () => {
-            audio.currentTime = 0
-            playMusic()
-        })
+    const playRepeat = () => {
+        const audio = e('#id-player-audio')
+        audio.currentTime = 0
+        playMusic()
     }
-    
+
     const random = (start, end) => {
         let max = Math.random() * (end - start + 1)
         let i = Math.floor(max + start)
@@ -486,39 +594,46 @@
         return index
     }
 
-    const playRandom = (audio, db) => {
-        audio.addEventListener('ended', () => {
+    const playRandom = () => {
+            const audio = e('#id-player-audio')
+            const db = getData()
             let index = randomIndex(db, audio)
+            log('index', index)
             audio.src = db[index]
             highlightSong()
             playMusic()
-        })
     }
 
-    const activeModel = (audio) => {
-        const db = getData()
+    const activeModel = (audio, id) => {
         const models = {
             'id-model-repeat':  playRepeat,
             'id-model-normal': playNormal,
             'id-model-shuffle': playRandom,
         }
+        if (id !== undefined){
+            let mod = models[id]
+            audio.removeEventListener('ended', mod)
+        }
         const active = e('.model-active')
         let model = active.id
-        models[model](audio, db)
+        let playMod = models[model]
+        audio.addEventListener('ended', playMod)
     }
 
-    const modelByClick = (element) => {
+    const modelByClick = (id) => {
         const models = [
             'id-model-normal',
             'id-model-repeat',
             'id-model-shuffle',
         ]
         let len = models.length
-        let index = models.findIndex( i => i === element.id)
-        let i = (len + index + 1) % len
-        let m = models[i]
-        let model = e(`#${m}`)
-        return model
+        let index = models.findIndex( i => i === id)
+        if (index > -1){
+            let i = (len + index + 1) % len
+            let m = models[i]
+            let model = e(`#${m}`)
+            return model
+        }
     }
 
     const bindPlayModel = () => {
@@ -528,10 +643,11 @@
 
         bindAll('.player-model', 'click', (event) => {
             let self = event.target
-            let model = modelByClick(self)
+            let id = self.id
+            let model = modelByClick(id)
             removeClassAll('model-active')
             model.classList.add('model-active')
-            activeModel(audio)
+            activeModel(audio, id)
         })
     }
 
@@ -543,6 +659,22 @@
     }
 
     __main()
+
+    /*
+    {
+   "songs":[
+      {
+         "name":"Moon Without The Stars",
+         "id":28377211,
+         "artists":[
+            {
+               "name":"Quiana",
+               "id":194643,
+               "picUrl":"http://p1.music.126.net/6y-UleORITEDbvrOLV0Q8A==/5639395138885805.jpg",
+               "img1v1Url":"http://p1.music.126.net/6y-UleORITEDbvrOLV0Q8A==/5639395138885805.jpg",
+            }],
+
+     */
 
 </script>
 </body>
