@@ -251,6 +251,7 @@
             background: #93cf96;
             cursor: pointer;
             border-radius: 50%;
+            z-index: 999;
         }
         
         #id-music-progress::-moz-range-thumb {
@@ -262,14 +263,14 @@
 
         .wd-music-procced{
             position: absolute;
-            /*width: 12%;*/
-            /*height: 10px;*/
-            /*background-color: red;*/
-            /*color: #000;*/
-            /*top: 7px;*/
-            /*left: 0;*/
-            /*border-radius: 5px;*/
-            /*z-index: 0;*/
+            max-width: 181px;
+            width: 1%;
+            height: 10px;
+            background-color: #93cf96;
+            opacity: 0.6;
+            top: 7px;
+            left: 3px;
+            border-radius: 14px;
         }
 
     </style>
@@ -313,20 +314,20 @@
 <br>
 <br>
 <br>
-<!--<div class="todo">-->
-    <!--<div class="title" style="margin-left: 100px"><strong>todo</strong></div>-->
-    <!--<pre>-->
+<div class="todo">
+    <div class="title" style="margin-left: 100px"><strong>todo</strong></div>
+    <pre>
         <!--1. 进度条完成没有颜色填充-->
         <!--2. setInterval 不懂, 似乎没有清除掉-->
         <!--3. 播放模式在切换之后没有删除之前的循环模式-->
-        <!--4. data 应该写在文件里面, 没有做好song name-->
-           <!--和 singer name的逻辑-->
-        <!--5. 是不是应该把播放过的 song 添加到一个array-->
-           <!--里面, 随机模式下的 上一首是不是就会播放-->
-           <!--上一首播放的歌曲？-->
-    <!--</pre>-->
+        4. data 应该写在文件里面, 没有做好song name
+           和 singer name的逻辑
+        5. 是不是应该把播放过的 song 添加到一个array
+           里面, 随机模式下的 上一首是不是就会播放
+           上一首播放的歌曲？
+    </pre>
 
-<!--</div>-->
+</div>
 
 
 <script>
@@ -450,24 +451,34 @@
         const currentBox = e('#id-music-current')
         let t = formattedTime(currentTime)
         currentBox.innerHTML = t
+    
     }
 
     const bindCurrentTime = (audio) => {
-        // log('bind current time')
-        let interval = 1000
-        let t = setInterval( () =>{
-            let current = audio.currentTime
-            updateCurrentTime(current)
-        }, interval)
-        return t
+        let f = () => {
+            let interval = 1000
+            let t = setInterval( () =>{
+                let current = audio.currentTime
+                updateCurrentTime(current)
+            }, interval)
+            return t
+        }
+        return f
     }
 
+    const thumbBarbyTime = (current, duration) => {
+        let done = e('.wd-music-procced')
+        let width = current / duration * 180
+        done.style.width = `${width}px`
+    }
+    
     const moveByTime = (bar, audio) => {
         let interval = 1000
         let t = setInterval( () =>{
-                let current = audio.currentTime
-                bar.value= current
-                // log('current', current)
+            let current = Math.round(audio.currentTime)
+            bar.value= current
+            let duration = audio.duration
+            thumbBarbyTime(current, duration)
         }, interval)
         return t
     }
@@ -491,8 +502,7 @@
         // manual set current time by input bar &&
         // will effect on current time box
         bar.addEventListener('input', ()=> {
-            // clearInterval(tick)
-            clearInterval(bindCurrentTime(audio))
+            // clearInterval(bindCurrentTime(audio))
             let val = Number(bar.value)
             audio.currentTime = val
             updateCurrentTime(val)
@@ -501,6 +511,7 @@
 
         // disable interval when mouse down on input
         bar.addEventListener('mousedown', ()=> {
+            // clearInterval(bindCurrentTime(audio))
             clearInterval(tick)
         })
 
@@ -514,7 +525,7 @@
     const bindTime = () => {
         const audio = e('#id-player-audio')
         bindDurationTime(audio)
-        bindCurrentTime(audio)
+        bindCurrentTime(audio)()
         bindTimeBar(audio)
     }
 
