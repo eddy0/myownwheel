@@ -30,3 +30,6 @@ const bindAll = (className, eventName, callback) => {
         })
     }
 }
+
+
+

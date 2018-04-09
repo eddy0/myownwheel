@@ -228,31 +228,36 @@
         indicatorByIndex(index)
     }
 
-    const autoPlay = (interval) => {
-        return setInterval( () =>{
-            playNextImage()
-        }, interval)
+    const autoPlay = () => {
+        let interval = 3000
+        let f = () => {
+            let t = setInterval( () =>{
+                playNextImage()
+            }, interval)
+            return t
+        }
+        return f
     }
 
-    const autoSlide = (interval) => {
-        let tick = autoPlay(interval)
+    const autoSlide = (tick) => {
+        // let tick = autoPlay()()
         const selector = e('.slide-list')
         selector.addEventListener('mouseenter', () => {
-            log('enter')
+            log('enter and clear tick', tick)
             clearInterval(tick)
         })
 
         selector.addEventListener('mouseleave', () => {
-            log('leave')
-            tick = autoPlay(interval)
+            tick = autoPlay()()
+            log('leave and create tick', tick)
         })
     }
 
     const __main =() =>{
         bindEventSlide()
         // set auto play interval time
-        let interval = 3000
-        autoSlide(interval)
+        let tick = autoPlay()()
+        autoSlide(tick)
     }
 
     __main()
@@ -260,6 +265,3 @@
 </script>
 </body>
 </html>
-
-
-
