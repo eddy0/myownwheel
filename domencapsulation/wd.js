@@ -36,7 +36,7 @@ const ajax = (method, path, data, callback) => {
     r.open(method, path, true)
     r.setRequestHeader('Content-Type', 'allication/json')
     r.onreadystatechange = () => {
-        if (r.readtState === 4) {
+        if (r.readyState === 4) {
             callback(r.response)
         } else {
             console.log('change', r.status)
@@ -52,7 +52,7 @@ const promiseAjax = (method, path, data) => {
         r.open(method, path, true)
         r.setRequestHeader('Content-Type', 'allication/json')
         r.onreadystatechange = () => {
-            if (r.readtState === 4) {
+            if (r.readyState === 4) {
                 reslove(r.response)
             } else {
                 reject(r.status)
