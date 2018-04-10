@@ -31,5 +31,34 @@ const bindAll = (className, eventName, callback) => {
     }
 }
 
+const ajax = (method, path, data, callback) => {
+    const r = new XMLHttpRequest()
+    r.open(method, path, true)
+    r.setRequestHeader('Content-Type', 'allication/json')
+    r.onreadystatechange = () => {
+        if (r.readtState === 4) {
+            callback(r.response)
+        } else {
+            console.log('change', r.status)
+        }
+    }
+    r.send(data)
+}
 
 
+const promiseAjax = (method, path, data) => {
+    let promise = new Promise((reslove, reject) => {
+        const r = new XMLHttpRequest()
+        r.open(method, path, true)
+        r.setRequestHeader('Content-Type', 'allication/json')
+        r.onreadystatechange = () => {
+            if (r.readtState === 4) {
+                reslove(r.response)
+            } else {
+                reject(r.status)
+            }
+        }
+        r.send(data)
+    })
+    return promise
+}
