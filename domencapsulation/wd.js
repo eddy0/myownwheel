@@ -30,3 +30,40 @@ const bindAll = (className, eventName, callback) => {
         })
     }
 }
+
+const ajax = (method, path, data, callback) => {
+    const r = new XMLHttpRequest()
+    r.open(method, path, true)
+    r.setRequestHeader('Content-Type', 'application/json')
+    r.onreadystatechange = () => {
+        if (r.readyState === 4 ) {
+            if( r.status === 200) {
+                let res = JSON.parse(r.response)
+                callback(res)
+                return res
+            } else {
+                throw new Error('ajax error', r.status)
+            }
+        }
+    }
+    data = JSON.stringify(data)
+    r.send(data)
+}
+
+
+const promiseAjax = (method, path, data) => {
+    let promise = new Promise((reslove, reject) => {
+        const r = new XMLHttpRequest()
+        r.open(method, path, true)
+        r.setRequestHeader('Content-Type', 'allication/json')
+        r.onreadystatechange = () => {
+            if (r.readyState === 4) {
+                reslove(r.response)
+            } else {
+                reject(r.status)
+            }
+        }
+        r.send(data)
+    })
+    return promise
+}
