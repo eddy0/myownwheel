@@ -57,27 +57,30 @@
         border-radius: 5px;
         text-align: center;
         transform: translate(-50%, -50%);
+        -webkit-transform: translate(-50%, -50%);
+
         animation: wdAlert 0.3s;
         z-index: 999;
     }
 
     @keyframes wdAlert {
     0% {
-    -webkit-transform: scale(.7);
-    transform: scale(.7);
+    -webkit-transform:translate(-50%, -50%)  scale(.7);
+    transform:translate(-50%, -50%)  scale(.7);
+
         }
 
     45% {
-        -webkit-transform: scale(1.05);
-        transform: scale(1.05);
+        -webkit-transform:translate(-50%, -50%)  scale(1.05);
+        transform:translate(-50%, -50%)  scale(1.05);
     }
     80% {
-        -webkit-transform: scale(.95);
-        transform: scale(.95);
+        -webkit-transform:translate(-50%, -50%)  scale(.95);
+        transform:translate(-50%, -50%)  scale(.95);
     }
     100% {
-        -webkit-transform: scale(1);
-        transform: scale(1);
+        -webkit-transform:translate(-50%, -50%)  scale(1);
+        transform:translate(-50%, -50%)  scale(1);
     }
     }
 
@@ -148,7 +151,7 @@
                 <div class="wd-alert-message">
                     you clicked the button!
                 </div>
-                <button class="wd-alert-btn">ok</buton>
+                <button class="wd-alert-btn">ok</button>
             </div>
 
         </div>
