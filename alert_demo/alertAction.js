@@ -24,7 +24,6 @@ class Alert {
 
     has(event) {
         let self = event.target
-        console.log('event', event)
         return self.classList.contains.bind(self.classList)
     }
 
@@ -388,7 +387,7 @@ const alertConfirm = () => {
 }
 
 const alertPrompt = () => {
-    let f = (confirm, value) => {
+    let confirmFunction = (confirm, value) => {
         if (confirm){
             new AlertConfirm({
                     title: 'confirm?',
@@ -412,12 +411,11 @@ const alertPrompt = () => {
     let a = new AlertPrompt({
         title: 'Please input',
         placeholder: 'input something',
-        callback: f ,
-
+        callback: confirmFunction ,
     })
 
 }
 
 // alertNotice()
-// alertConfirm()
-alertPrompt()
+alertConfirm()
+// alertPrompt()

@@ -573,14 +573,18 @@ const finishTodo = (self) => {
 }
 
 const bindUpdateDelegate = () => {
+    let todoAction = {
+        'btn-todo-delete': deleteTodo,
+        'btn-todo-edit': editTodo,
+        'btn-todo-done': finishTodo,
+    }
     bind('.todo-container', 'click', (event)=> {
         const self = event.target
-        if (self.classList.contains('btn-todo-delete')) {
-            deleteTodo(self)
-        } else if (self.classList.contains('btn-todo-edit')) {
-            editTodo(self)
-        } else if (self.classList.contains('btn-todo-done')) {
-            finishTodo(self)
+        for (let key in todoAction  ) {
+                if (self.classList.contains(key)){
+                    let action = todoAction[key]
+                    action(self)
+                }
         }
     })
 }
