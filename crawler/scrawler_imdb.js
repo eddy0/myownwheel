@@ -3,32 +3,37 @@ const cheerio = require('cheerio')
 const fs = require('fs')
 const path = require('path')
 
-const ensureExist = (dir) => {
-    let exist = fs.existsSync(dir)
+const log = console.log.bind(console)
+
+const ensureDir = (dir) => {
+    const exist = fs.existsSync(dir)
     if (!exist) {
-        fs.mkdirSync(path.join(__dirname, dir))
+        fs.mkdirSync(dir)
     }
 }
 
-const save = (html, url) => {
-    let filename = url.split('/').slice(-1)[0]
-    let dir = './download'
-    ensureExist('./download')
-    let p = path.join(__dirname, dir, `${filename}.html`)
-    let options = {
-        encoding: 'utf8',
+const cacheUrl = (url) => {
+    let name = url.split('/').slice(-1)[0] + '.html'
+    let dir = 'download/'
+    ensureDir(dir)
+    const file = path.join(__dirname, './', dir, name )
+    const exist = fs.existsSync(file)
+    if (exist) {
+        let body = fs.readFileSync(file)
+        return body
+    } else {
+        const r = request('GET', url)
+        let body = r.getBody('utf-8')
+        fs.writeFileSync(file, body)
+        return body
     }
-    fs.writeFileSync(p, html, options)
 }
 
 const moviesFromUrl = (url) => {
-    const r = request('GET', url)
-    const body = r.getBody('utf-8')
-    save(body, url)
+    let body = cacheUrl(url)
 }
-
 
 if (require.main === module) {
     const url = 'http://www.imdb.com/chart/top'
-    let movies = moviesFromUrl(url)
+    moviesFromUrl(url)
 }
