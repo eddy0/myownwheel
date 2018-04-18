@@ -1,0 +1,258 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport"
+          content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <style >
+        *{
+            box-sizing: border-box;
+            padding: 0;
+            margin: 0
+        }
+        body{
+            font-family: Helvetica, arial, sans-serif;
+        }
+        ul{
+            list-style: none;
+        }
+        .wd-slider-item{
+            display: none;
+            position: absolute;
+            top:0;
+            bottom: 0;
+            width: 100%;
+            height: 100%;
+            transition: -webkit-transform 1000ms ease;
+
+        }
+        .active{
+            display: block;
+            transform: translateZ(0px) translateY(0px);
+        }
+        .prev{
+            transform: translateZ(0px) translateY(-719px);
+        }
+        .next{
+            transform: translateZ(0px) translateY(719px);
+        }
+        .wd-slider-wrapper > li{
+            overflow: hidden;
+            padding: 0;
+            list-style: none;
+        }
+        .wd-slider-dot-wrapper{
+            position: fixed;
+            right: 0;
+            top: 50%;
+            transform: translateY(-50%);
+            padding: 14px 0;
+            color: rgba(255, 255, 255, 0.5);
+        }
+
+        .wd-slider-dot-wrapper > li{
+            list-style: none;
+            width: 10px;
+            height: 10px;
+            border-radius: 50%;
+            background-color: #fff;
+            margin: 10px;
+            opacity: 0.8;
+        }
+        .wd-slider-dot-wrapper::before{
+            content:'...';
+            position: absolute;
+            top: 0;
+            right: 10px;
+            transform: rotate(-90deg) translateY(-3px);
+        }
+         .wd-slider-dot-wrapper::after{
+             content:'...';
+             position: absolute;
+             bottom: 0;
+             right: 10px;
+             transform: rotate(-90deg) translateY(-3px);
+         }
+         .wd-slider-dot.dot-active{
+             transform: scale(1.5);
+             transition: all 0.3 linear;
+             box-shadow: 0 1px 3px rgba(0,0,0,0.2) ;
+             border-radius: 50%;
+             background-color: #ffb360;
+
+         }
+
+
+    </style>
+    <script defer src="https://use.fontawesome.com/releases/v5.0.9/js/all.js" integrity="sha384-8iPTk2s/jMVj81dnzb/iFR2sdA7u06vHJyyLlAd4snFpCl/SnyUjRrbdJsw1pGIl" crossorigin="anonymous"></script>
+    <title>Document</title>
+</head>
+<body>
+<ul class="wd-slider-wrapper" data-items="3" data-active="2">
+    <li class="wd-slider-item" id="id-slider-0" data-index='0'>
+        <div class="1" style="background-color:lightblue; width:100%; height: 100%;"></div>
+    </li>
+    <li class="wd-slider-item" id="id-slider-1" data-index='1'>
+        <div class="2" style="background-color:lightgreen; width:100%; height: 100%;  "></div>
+
+    </li>
+    <li class="wd-slider-item active" id="id-slider-2" data-index='2' >
+        <div class="3" style="background-color:brown;width:100%; height: 100%; "></div>
+
+    </li>
+</ul>
+<ul class="wd-slider-dot-wrapper">
+    <li class="wd-slider-dot dot-active"></li>
+    <li class="wd-slider-dot"></li>
+    <li class="wd-slider-dot"></li>
+</ul>
+
+</div>
+
+<script>
+const e = (sel) => document.querySelector(sel)
+const es = (sel) => document.querySelectorAll(sel)
+const log = console.log.bind(console)
+const bindAll = (sel, eventName, callback) => {
+    const element = es(sel)
+    for (var i = 0; i < element.length; i++) {
+        let tag = element[i]
+        tag.addEventListener(eventName, (event) => {
+            callback(event)
+        })
+    }
+}
+
+const removeClassAll = (className) => {
+    const element = es(`.${className}`)
+    for (let i = 0; i < element.length; i++) {
+        let tag = element[i]
+        tag.classList.remove(className)
+    }
+}
+
+const offsetByMouse = () => {
+    let start
+    let after
+    window.addEventListener('mousedown', (event) => {
+        start = event.clientY
+    })
+    window.addEventListener('mouseup', (event)=> {
+        after = event.clientY
+        let offset = after - start
+        log('offset', start, after, offset)
+        if (offset > 80) {
+            offset = 1
+        } else if (offset < -80) {
+            offset = -1
+        }  else{
+            offset =  0
+        }
+        showContent(offset)
+    })
+}
+
+const showContent = (offset) => {
+    const wrapper = e('.wd-slider-wrapper')
+    let index = Number(wrapper.dataset.active)
+    let i = indexByWheel(index, offset)
+    showImgByIndex(i)
+}
+
+const indexByWheel = (index, offset) => {
+    const wrapper = e('.wd-slider-wrapper')
+    const total = Number(wrapper.dataset.items)
+    let i = (total + index + offset) % total
+    return i
+}
+
+
+
+const indexBymove = (index) => {
+    const wrapper = e('.wd-slider-wrapper')
+    const total = Number(wrapper.dataset.items)
+    let i = (total + index + offset) % total
+    return i
+}
+
+const showImgByIndex = (index) => {
+    const wrapper = e('.wd-slider-wrapper')
+    wrapper.dataset.active = index
+    removeClassAll('active')
+    const target = e(`#id-slider-${index }`)
+    target.classList.add('active')
+}
+
+
+
+const bindEvents = () => {
+    const wrapper = e('.wd-slider-wrapper')
+    const active =  wrapper.dataset.active
+    const target = self.closest('.wd-slider-item')
+    let index = Number(target.dataset.index)
+    let i = indexBymove(index)
+    log('index', i)
+    showImgByIndex(i)
+    
+
+}
+
+const test = () => {
+    const items = es('.wd-slider-item')
+    bindAll('.wd-slider-item', 'click', (event) => {
+        let indexs = ['active', 'prev', 'next']
+        let actions = {
+            'active': 'translateZ(0px) translateY(0px); z-index: 10;',
+            'prev': 'translateZ(0px) translateY(-500px);',
+            'next': 'translateZ(0px) translateY(500px);',
+        }
+        // let self = event.target
+        // let item  = self.closest('.wd-slider-item')
+        // let index = item.dataset.index
+        items.forEach( (item) => {
+            let index = item.dataset.index
+            let i = indexs.indexOf(index)
+            let newIndex =  (i + 1) % indexs.length
+            let action = indexs[newIndex]
+            item.dataset.index = action
+            item.style.transform =  actions[action]
+            item.setAttribute('style', `transform:${actions[action]};`)
+
+        })
+    })
+}
+
+// const touchEvent = () => {
+//     window.addEventListener('touchmove', (event) => {
+//         const y = event
+//         const ye = event.clientY
+//         console.log('ok', y, ye)
+//     })
+//
+//     document.addEventListener('mousewheel', (event) => {
+//         event.preventDefault()
+//         const delta = event.wheelDelta
+//         if (delta > 0) {
+//             console.log('ok', event.wheelDelta)
+//         }
+//     })
+// }
+
+const __main = () => {
+    // test()
+    // touchEvent()
+    // bindEvents()
+    offsetByMouse()
+
+}
+
+__main()
+
+
+
+
+</script>
+
+</body>
+</html>

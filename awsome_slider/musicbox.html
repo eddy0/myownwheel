@@ -1,0 +1,124 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport"
+          content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <style >
+        *{
+            box-sizing: border-box;
+            padding: 0;
+            margin: 0
+        }
+        body{
+            font-family: Helvetica, arial, sans-serif;
+        }
+        ul{
+            list-style: none;
+        }
+        .wd-slider-wrapper > li{
+            margin: 0;
+            width: 100%;
+            height: 100%;
+            overflow: hidden;
+            padding: 0;
+            list-style: none;
+        }
+        .wd-slider-dot-wrapper{
+            position: fixed;
+            right: 0;
+            top: 50%;
+            transform: translateY(-50%);
+            padding: 14px 0;
+            color: rgba(255, 255, 255, 0.5);
+        }
+
+        .wd-slider-dot-wrapper > li{
+            list-style: none;
+            width: 10px;
+            height: 10px;
+            border-radius: 50%;
+            background-color: #fff;
+            margin: 10px;
+            opacity: 0.8;
+        }
+        .wd-slider-dot-wrapper::before{
+            content:'...';
+            position: absolute;
+            top: 0;
+            right: 10px;
+            transform: rotate(-90deg) translateY(-3px);
+        }
+         .wd-slider-dot-wrapper::after{
+             content:'...';
+             position: absolute;
+             bottom: 0;
+             right: 10px;
+             transform: rotate(-90deg) translateY(-3px);
+         }
+         .wd-slider-dot.dot-active{
+             transform: scale(1.5);
+             transition: all 0.3 linear;
+             box-shadow: 0 1px 3px rgba(0,0,0,0.2) ;
+             border-radius: 50%;
+             background-color: #ffb360;
+
+         }
+
+
+    </style>
+    <script defer src="https://use.fontawesome.com/releases/v5.0.9/js/all.js" integrity="sha384-8iPTk2s/jMVj81dnzb/iFR2sdA7u06vHJyyLlAd4snFpCl/SnyUjRrbdJsw1pGIl" crossorigin="anonymous"></script>
+    <title>Document</title>
+</head>
+<body>
+<ul id="wd-slider-wrapper">
+    <li class="wd-slider-item">
+        <div class="1" style="background-color:lightblue; height:500px;"></div>
+    </li>
+    <li class="wd-slider-item">
+        <div class="2" style="background-color:lightgreen; height:500px;"></div>
+
+    </li>
+    <li class="wd-slider-item">
+        <div class="3" style="background-color:brown; height:500px;"></div>
+
+    </li>
+</ul>
+<ul class="wd-slider-dot-wrapper">
+    <li class="wd-slider-dot dot-active"></li>
+    <li class="wd-slider-dot"></li>
+    <li class="wd-slider-dot"></li>
+</ul>
+
+</div>
+
+<script>
+const e = (sel) => document.querySelector(sel)
+const es = (sel) => document.querySelectorAll(sel)
+const log = console.log.bind(console)
+const bindAll = (sel, eventName, callback) => {
+    const element = es(sel)
+    for (var i = 0; i < element.length; i++) {
+        let tag = element[i]
+        tag.addEventListener(eventName, (event) => {
+            callback(event)
+        })
+    }
+}
+
+const __main = () => {
+    bindAll('.wd-slider-item', 'click', (event) => {
+        log('click', event.pageY, event.clientY)
+    })
+}
+
+__main()
+
+
+
+
+</script>
+
+</body>
+</html>
