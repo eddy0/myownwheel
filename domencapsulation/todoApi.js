@@ -12,7 +12,7 @@ api.all().then()
 
 class TodoApi{
     constructor() {
-        this.baseUrl = 'https://vip.kybmig.cc/sandbox/todo/271454165'
+        this.baseUrl = 'https://localhost:8000/todo/'
     }
     
     ajaxpro({method, path, headers, data}) {

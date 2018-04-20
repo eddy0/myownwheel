@@ -4,6 +4,11 @@ class Alert {
         this.container = this.e('.wd-alert-container')
     }
 
+    then(callback){
+        callback()
+        return this
+    }
+
     e(sel) {
         return document.querySelector(sel)
     }
