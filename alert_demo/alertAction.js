@@ -1,12 +1,20 @@
 class Alert {
-    constructor(){
+    constructor() {
         this.init()
         this.container = this.e('.wd-alert-container')
+        this.action = undefined
+
     }
 
-    then(callback){
-        callback()
+    on(event){
+        this.action = event
         return this
+    }
+
+    fire(...args) {
+        if (this.action !== undefined) {
+            this.action.apply(this, args)
+        }
     }
 
     e(sel) {
@@ -270,7 +278,6 @@ class AlertNotice extends Alert {
     }
 }
 
-
 class AlertConfirm extends Alert {
     constructor(args) {
         super()
@@ -327,7 +334,7 @@ class AlertPrompt extends Alert {
     }
 
     PromptTemplate() {
-        const t = `
+        const t = (`
                 <div class="wd-alert-box">
                     <div class="wd-alert-title">
                         ${this.title.toUpperCase()}
@@ -340,7 +347,7 @@ class AlertPrompt extends Alert {
                     <button class="wd-alert-btn wd-alert-cancel">Cancel</button>
                     </div>
                 </div>
-            `
+            `)
         return t
     }
 
@@ -351,13 +358,14 @@ class AlertPrompt extends Alert {
 
     actionAlert() {
         this.bindAll('.wd-alert-btn', 'click', (event) => {
+            console.log('clicked', event, this,  this.has(event)('wd-alert-submit') )
             this.container.classList.toggle('alert-show')
             if(this.has(event, 'wd-alert-submit')) {
                 const input = this.e('.wd-alert-input')
                 const val = input.value
-                this.callback(true, val)
+                this.fire(true, val)
             } else if(this.has('wd-alert-cancel')) {
-                this.callback(false)
+                this.fire(false)
             }
         })
     }
@@ -418,9 +426,43 @@ const alertPrompt = () => {
         placeholder: 'input something',
         callback: confirmFunction ,
     })
-
 }
 
 // alertNotice()
-alertConfirm()
+// alertConfirm()
 // alertPrompt()
+
+let test = () => {
+    let confirmFunction = (confirm, value) => {
+        console.log('this', this)
+        console.log('confirma', confirm)
+        if (confirm){
+            new AlertConfirm({
+                title: 'confirm?',
+                notice: `you have typed ${value}`,
+                callback: (confirmed) => {
+                    if (confirmed){
+                        let a = new AlertNotice({
+                            title: 'notice',
+                            notice: `you have submitted `
+                        })
+                    } else{
+                        console.log('cancelled')
+                        let a = new AlertNotice({
+                            title: 'cancelled',
+                            notice: 'you have cancelled'
+                        })
+                    }},
+            })
+        }
+    }
+
+    let a = new AlertPrompt({
+        title: 'Please input',
+        placeholder: 'input something',
+    }).on(confirmFunction)
+
+}
+
+test()
+
