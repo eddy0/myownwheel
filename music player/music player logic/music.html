@@ -273,6 +273,128 @@
             border-radius: 14px;
         }
 
+        .timeline_wrap {
+            position: relative;
+            transition: top .2s ease-in-out;
+        }
+
+
+        /*.full_line {*/
+            /*position: absolute;*/
+            /*width: 100%;*/
+            /*height: 10px;*/
+            /*transition: background-color .2s ease-in-out;*/
+            /*background-color: rgba(255, 255, 255, .4);*/
+        /*}*/
+
+        /*.line_preload {*/
+            /*position: absolute;*/
+            /*top: 4px;*/
+            /*height: 2px;*/
+            /*background-color: rgb(0, 129, 181);*/
+        /*}*/
+
+        /*.line_played {*/
+            /*position: absolute;*/
+            /*top: 3px;*/
+            /*height: 3px;*/
+            /*background-color: rgba(255, 255, 255, 1);*/
+        /*}*/
+
+        /*.line_played {*/
+            /*position: absolute;*/
+            /*background-color: #719f71;*/
+            /*height: 10px;*/
+            /*border-radius: 5px 0 0 5px;*/
+        /*}*/
+
+        /*.progress-bar-pointer {*/
+            /*position: absolute;*/
+            /*top: 0;*/
+            /*right: -1px;*/
+            /*width: 0;*/
+            /*height: 0;*/
+            /*transition: all .1s ease-in-out;*/
+            /*border-radius: 50%;*/
+            /*background: #fff;*/
+        /*}*/
+
+
+        /*.timeline_wrap {*/
+            /*position: relative;*/
+            /*position: relative;*/
+            /*top: 0;*/
+            /*margin-top: 5px;*/
+            /*-webkit-transition: top .2s ease-in-out;*/
+            /*transition: top .2s ease-in-out;*/
+        /*}*/
+
+        .line_played {
+            position: absolute;
+            border-radius: 5px;
+            height: 10px;
+            background-color: #719f71;
+            z-index: 2;
+        }
+
+        .line_preload {
+            position: absolute;
+            height: 10px;
+            border-radius: 5px;
+            /*background-color: rgb(0, 129, 181);*/
+            background-color: #a6a6a6;
+            z-index: 1;
+        }
+
+        .line_preload.line_preload_up {
+            background-color: rgba(0, 0, 0, 0.15);
+        }
+
+        .progress-bar-wrapper {
+            width: 180px;
+            height: 10px;
+            cursor: pointer;
+            background-color: #c6c6c6;
+            border-radius: 5px;
+        }
+
+        .full_line {
+            position: absolute;
+            top: 4px;
+            width: 100%;
+            height: 2px;
+            -webkit-transition: background-color .2s ease-in-out;
+            transition: background-color .2s ease-in-out;
+            background-color: rgba(255, 255, 255, .4);
+        }
+
+        .progress-bar-pointer {
+            position: absolute;
+            top: 0;
+            right: 0;
+            /*transform: translateY(-50%);*/
+            width: 10px;
+            height: 10px;
+            -webkit-transition: all .1s ease-in-out;
+            transition: all .1s ease-in-out;
+            border-radius: 50%;
+            background: #fff;
+        }
+
+        /*.progress-bar-wrapper:hover .progress-bar-pointer {*/
+            /*right: -5px;*/
+            /*width: 10px;*/
+            /*height: 10px;*/
+        /*}*/
+
+        .progress-bar-pointer.progress-bar-pointer_up {
+            background: rgba(0, 178, 250, 1);
+        }
+
+
+
+
+
     </style>
 </head>
 <body>
@@ -289,8 +411,22 @@
 <div class="audio-progress">
     <span id="id-music-current">00:00</span>
     <div class="bar-container">
-        <input id="id-music-progress" min="0" type="range" value="0" >
-        <span class="wd-music-procced"></span>
+        <div class="timeline_wrap">
+
+            <div class="timeline progress-bar-wrapper">
+                <!--<div class="full_line"></div>-->
+                <div class="line_preload" style="width: 70%;"></div>
+                <div class="line_played" style="width: 39%;">
+                    <span class="progress-bar-pointer"></span>
+                </div>
+
+            </div>
+
+        </div>
+
+
+        <!--<input id="id-music-progress" min="0" type="range" value="0" >-->
+        <!--<span class="wd-music-procced"></span>-->
     </div>
     <span id="id-music-duration">00:00</span>
 </div>
