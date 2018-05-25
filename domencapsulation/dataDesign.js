@@ -190,3 +190,34 @@ function formatUsers (users) {
             return formattedUsers
         }, {})
 }
+
+var arr = [
+    [1, 2, 2],
+    [3, 4, 5, 5],
+    [6, 7, 8, 9,
+        [11, 12,
+            [12, 13,
+                [14]
+            ]
+        ],
+    ],
+    10
+]
+
+var flatten = function(list) {
+    var l = []
+    for (var i = 0; i < list.length; i++) {
+        var e = list[i]
+        // 如果 e 是一个数组，递归调用 flatten 函数
+        if (Array.isArray(e)) {
+            var result = flatten(e)
+            // 得到拍平的结果之后拼接在 l 后面, 当然也可以用循环一个一个 push 进去
+            l = l.concat(result)
+        } else {
+            // 如果 e 不是数组, 直接 push 到 l 中
+            l.push(e)
+        }
+    }
+
+    return l
+}
