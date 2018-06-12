@@ -223,27 +223,35 @@ const test = () => {
     })
 }
 
-// const touchEvent = () => {
-//     window.addEventListener('touchmove', (event) => {
-//         const y = event
-//         const ye = event.clientY
-//         console.log('ok', y, ye)
-//     })
-//
-//     document.addEventListener('mousewheel', (event) => {
-//         event.preventDefault()
-//         const delta = event.wheelDelta
-//         if (delta > 0) {
-//             console.log('ok', event.wheelDelta)
-//         }
-//     })
-// }
+const wheelEvent = () => {
+    window.canmove = false
+
+    document.addEventListener('wheel', (event) => {
+        event.preventDefault()
+
+        const delta = event.wheelDelta
+        let offset = 0
+        if(delta > 0) {
+            offset = 1
+        } else if(delta < 0) {
+            offset = -1
+        }
+        if(delta > 1000) {
+            showContent(offset)
+        }
+    })
+
+    document.addEventListener('touchstart', (event) => {
+        log('ok',)
+
+    })
+}
 
 const __main = () => {
     // test()
-    // touchEvent()
+    wheelEvent()
     // bindEvents()
-    offsetByMouse()
+    // offsetByMouse()
 
 }
 
